@@ -1,4 +1,4 @@
-createSearchLuceneIndex
+createSearchLuceneIndexScala
 =====
 
 createSearchLuceneIndexScala is copyrighted free software by Yamir Encarnación &lt;yencarnacion@webninjapr.com&gt;.
