@@ -1,0 +1,48 @@
+apply plugin: 'idea'
+apply plugin: 'scala'
+apply plugin: 'groovy'
+apply plugin: 'base'
+
+project.ext.inputDir = new File(buildDir, "resources/input")
+project.ext.indexDir = new File(buildDir, "resources/output")
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.scala-lang:scala-dist:2.11.0-RC1'
+    compile 'org.scala-lang:scala-library-all:2.11.0-RC1'
+    compile 'org.apache.lucene:lucene-core:4.6.1'
+    compile 'org.apache.lucene:lucene-analyzers-common:4.6.1'
+    compile 'org.apache.lucene:lucene-queryparser:4.6.1'
+    testCompile 'junit:junit:4.11'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.10'
+}
+
+task runIndexScript (dependsOn: classes, type: JavaExec) {
+    inputs.dir inputDir
+    outputs.dir indexDir
+    main = 'Index'
+    classpath = sourceSets.main.runtimeClasspath
+    args = [ "$projectDir/resources/output/",
+            "$projectDir/resources/input/" ]
+}
+
+task runSearchScript (dependsOn: runIndexScript, type: JavaExec) {
+    inputs.dir indexDir
+    main = 'Search'
+    classpath = sourceSets.main.runtimeClasspath
+    args = [ "$projectDir/resources/output/",
+            "Jane AND Austen" ]
+}
+
+task cleanIndexDir(type: Delete) {
+    inputs.dir indexDir
+    delete fileTree(dir: "$projectDir/resources/output")
+}
+
+clean.dependsOn cleanIndexDir
